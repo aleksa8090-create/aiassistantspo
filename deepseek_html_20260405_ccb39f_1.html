@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AI Педагог СПО | Создаём викторины с нейросетями</title>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* мягкие градиенты, современный стиль */
+        .bg-gradient-soft {
+            background: radial-gradient(circle at 10% 20%, rgba(216, 241, 255, 0.4) 0%, rgba(255, 248, 235, 0.3) 100%);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        /* кнопки */
+        .btn-primary {
+            background: linear-gradient(105deg, #3b3bff 0%, #6366f1 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 18px rgba(59, 59, 255, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(105deg, #2b2bff 0%, #4f52e5 100%);
+            box-shadow: 0 15px 25px -8px rgba(59, 59, 255, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 60px;
+            padding: 10px 24px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: #3b3bff;
+            background: #f0f2ff;
+        }
+
+        /* поля формы */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            color: #334155;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input, .input-number {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* карточки преимуществ */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edf2f7;
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #3b3bff, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero {
+            padding: 2rem 0 1rem 0;
+        }
+
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            background: linear-gradient(to right, #1e293b, #3b3bff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .badge {
+            background: #eef2ff;
+            color: #3b3bff;
+            border-radius: 100px;
+            padding: 5px 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .image-deco {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .deco-icon {
+            background: white;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* уведомление */
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast-notify.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .container {
+                padding: 0 20px;
+            }
+            .btn-primary {
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-soft">
+
+<div class="container">
+    <!-- шапка с легкой навигацией -->
+    <div class="glass-card" style="margin: 24px 0 20px 0; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-brain" style="font-size: 28px; color: #3b3bff;"></i>
+            <span style="font-weight: 700; font-size: 1.2rem;">AI Edu<span style="color:#3b3bff;">СПО</span></span>
+        </div>
+        <div class="badge"><i class="fas fa-robot"></i> Помощник преподавателя</div>
+    </div>
+
+    <!-- Hero + основной блок -->
+    <div class="hero" style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between; align-items: center;">
+        <div style="flex: 1.2;">
+            <span class="badge" style="margin-bottom: 1rem; display: inline-block;"><i class="fas fa-magic"></i> Генерация с ИИ</span>
+            <h1 class="hero-title">Создавайте материалы для образовательных мероприятий с нейросетями</h1>
+            <p style="font-size: 1.1rem; margin-top: 1rem; color: #334155;">Интерактивные викторины, тесты, квизы — нейросети помогут за минуты. Просто задайте параметры, и AI сгенерирует готовый HTML-код.</p>
+            <div style="margin-top: 2rem;">
+                <i class="fas fa-check-circle" style="color:#3b3bff;"></i> <span style="font-weight:500;">Адаптировано под СПО</span>&nbsp;&nbsp;&nbsp;
+                <i class="fas fa-check-circle" style="color:#3b3bff;"></i> <span style="font-weight:500;">Современный дизайн</span>
+            </div>
+        </div>
+        <div class="image-deco" style="flex: 0.8;">
+            <div class="deco-icon"><i class="fas fa-chalkboard-user fa-3x" style="color:#3b3bff;"></i></div>
+            <div class="deco-icon"><i class="fas fa-microchip fa-3x" style="color:#8b5cf6;"></i></div>
+            <div class="deco-icon"><i class="fas fa-code fa-3x" style="color:#f97316;"></i></div>
+        </div>
+    </div>
+
+    <!-- Блок настройки викторины (ключевой) -->
+    <div class="glass-card" style="padding: 2rem; margin: 2rem 0 2rem 0;">
+        <div style="text-align: center; margin-bottom: 1.8rem;">
+            <i class="fas fa-question-circle" style="font-size: 2rem; color:#3b3bff;"></i>
+            <h2 style="font-weight: 700; margin-top: 8px;">Конструктор промта для викторины</h2>
+            <p style="color: #475569;">Укажите параметры — ИИ создаст полноценную викторину с современным интерфейсом</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Тема викторины</label>
+                <input type="text" id="quizTheme" placeholder="Например: Операционные системы, Правоведение, Математика" value="Информатика и ИКТ">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-graduation-cap"></i> Номер курса (СПО)</label>
+                <input type="number" id="courseNum" value="2" min="1" max="5">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-layer-group"></i> Общее кол-во вопросов</label>
+                <input type="number" id="totalQ" value="6" min="2" max="20">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-dot-circle"></i> Вопросов с 1 верным ответом</label>
+                <input type="number" id="singleAns" value="3" min="0">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-check-double"></i> Вопросов с несколькими ответами</label>
+                <input type="number" id="multiAns" value="3" min="0">
+            </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 30px;">
+            <button id="createQuizBtn" class="btn-primary"><i class="fab fa-yandex-international"></i> Создать викторину с ИИ</button>
+            <button id="copyPromptOnly" class="btn-outline"><i class="far fa-copy"></i> Копировать только промт</button>
+        </div>
+        <p style="font-size: 0.8rem; text-align: center; margin-top: 20px; color: #5b6e8c;">
+            <i class="fas fa-info-circle"></i> Нажмите главную кнопку — откроется <strong>Яндекс Алиса</strong>, промт скопируется в буфер. Вставьте его (Ctrl+V) в поле запроса Алисы, и нейросеть сгенерирует викторину.
+        </p>
+    </div>
+
+    <!-- Секция преимуществ + креативные изображения -->
+    <div style="margin: 3rem 0 1rem;">
+        <div style="text-align: center;">
+            <i class="fas fa-robot" style="font-size: 2rem; color: #6366f1;"></i>
+            <h2 style="font-weight: 700; margin-top: 10px;">Почему ИИ — лучший помощник педагога СПО?</h2>
+            <p style="color: #475569;">Экономия времени, креативность, адаптация под любой уровень</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-hourglass-half"></i>
+                <h3 style="margin: 12px 0 8px;">Скорость</h3>
+                <p>Создайте викторину из 10 вопросов за 2 минуты вместо часа ручной работы.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-palette"></i>
+                <h3 style="margin: 12px 0 8px;">Современный дизайн</h3>
+                <p>ИИ генерирует готовый HTML/CSS с адаптивом и красивой анимацией.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3 style="margin: 12px 0 8px;">Разные форматы</h3>
+                <p>Одиночный выбор, множественный выбор — гибко подстраивается под цели занятия.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-university"></i>
+                <h3 style="margin: 12px 0 8px;">СПО-ориентация</h3>
+                <p>Темы профессиональных модулей, общепрофессиональных дисциплин.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Пример визуального блока с картинками / образовательный контент -->
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; background: #ffffffcc; border-radius: 2rem; padding: 1.5rem; margin: 2rem 0; align-items: center;">
+        <div style="flex: 1; min-width: 180px; text-align: center;">
+            <i class="fas fa-chalkboard" style="font-size: 4rem; color: #3b3bff;"></i>
+            <p style="font-weight: 500; margin-top: 10px;">Интерактивные лекции</p>
+        </div>
+        <div style="flex: 1; min-width: 180px; text-align: center;">
+            <i class="fas fa-file-alt" style="font-size: 4rem; color: #f97316;"></i>
+            <p style="font-weight: 500; margin-top: 10px;">Контроль знаний</p>
+        </div>
+        <div style="flex: 1; min-width: 180px; text-align: center;">
+            <i class="fas fa-users" style="font-size: 4rem; color: #8b5cf6;"></i>
+            <p style="font-weight: 500; margin-top: 10px;">Групповые соревнования</p>
+        </div>
+        <div style="flex: 1; min-width: 180px; text-align: center;">
+            <i class="fas fa-brain" style="font-size: 4rem; color: #06b6d4;"></i>
+            <p style="font-weight: 500; margin-top: 10px;">Нейросети в образовании</p>
+        </div>
+    </div>
+
+    <!-- Как работает раздел -->
+    <div class="glass-card" style="padding: 1.8rem; margin-bottom: 2rem;">
+        <h3 style="display: flex; gap: 10px; align-items: center;"><i class="fas fa-lightbulb"></i> Как это работает?</h3>
+        <ol style="margin: 1rem 0 0 1.2rem; display: flex; flex-direction: column; gap: 10px;">
+            <li><strong>1. Заполните поля:</strong> тема, курс, количество вопросов и типы ответов.</li>
+            <li><strong>2. Нажмите «Создать викторину с ИИ»</strong> — автоматически откроется <strong>Яндекс Алиса (Alice)</strong> в новой вкладке, а нужный промт скопируется в буфер обмена.</li>
+            <li><strong>3. Вставьте промт</strong> в поле ввода Алисы (Ctrl+V или ⌘+V) и нажмите отправить — нейросеть сгенерирует готовый HTML‑код викторины.</li>
+            <li><strong>4. Скопируйте код</strong> и используйте на занятиях, в Moodle или любом веб-ресурсе.</li>
+        </ol>
+        <div class="badge" style="margin-top: 18px; background: #e6f7f0;"><i class="fas fa-message"></i> Пример промта: «Создай HTML-код для викторины на тему "БД" для студентов 3 курса...»</div>
+    </div>
+
+    <footer style="text-align: center; padding: 2rem 0 2rem; border-top: 1px solid #e2e8f0; margin-top: 1rem;">
+        <p style="color: #5b6e8c;">🔹 AI-помощник для преподавателей системы среднего профессионального образования 🔹</p>
+        <p style="font-size: 0.8rem;">Используйте современные технологии, чтобы вдохновлять студентов</p>
+    </footer>
+</div>
+
+<div id="toastMsg" class="toast-notify">✨ Промт скопирован!</div>
+
+<script>
+    (function() {
+        // DOM элементы
+        const themeInput = document.getElementById('quizTheme');
+        const courseInput = document.getElementById('courseNum');
+        const totalQInput = document.getElementById('totalQ');
+        const singleAnsInput = document.getElementById('singleAns');
+        const multiAnsInput = document.getElementById('multiAns');
+        const createBtn = document.getElementById('createQuizBtn');
+        const copyOnlyBtn = document.getElementById('copyPromptOnly');
+        const toast = document.getElementById('toastMsg');
+
+        function showMessage(text, isError = false) {
+            toast.textContent = text || (isError ? '❌ Ошибка' : '✅ Готово');
+            toast.style.background = isError ? '#b91c1c' : '#1e293b';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2800);
+        }
+
+        function validateAndGetValues() {
+            let theme = themeInput.value.trim();
+            if (theme === "") {
+                showMessage("⚠️ Введите тему викторины", true);
+                return null;
+            }
+            let course = parseInt(courseInput.value, 10);
+            if (isNaN(course) || course < 1) course = 1;
+            let total = parseInt(totalQInput.value, 10);
+            if (isNaN(total) || total < 1) total = 4;
+            let single = parseInt(singleAnsInput.value, 10);
+            if (isNaN(single)) single = 0;
+            let multi = parseInt(multiAnsInput.value, 10);
+            if (isNaN(multi)) multi = 0;
+            
+            if (single + multi !== total) {
+                showMessage(`❗ Сумма вопросов (с одним ответом ${single} + с несколькими ${multi}) не равна общему количеству ${total}. Откорректируйте поля.`, true);
+                return null;
+            }
+            if (single < 0 || multi < 0 || total <= 0) {
+                showMessage("Количество вопросов должно быть положительным", true);
+                return null;
+            }
+            return { theme, course, total, single, multi };
+        }
+
+        function buildPrompt(values) {
+            // Формируем промт по шаблону из задания
+            // "Создай HTML - код для викторины на тему "[тема]" для студентов [номер] курса. В викторине [количество] вопросов.
+            // [количество] вопроса с одним верным ответом, [количество] вопросов с несколькими верными ответами. Сделай современный дизайн и понятный интерфейс."
+            let { theme, course, total, single, multi } = values;
+            // грамматически адаптируем фразы (но можно оставить как есть, чтобы ИИ понял)
+            let prompt = `Создай HTML - код для викторины на тему "${theme}" для студентов ${course} курса. В викторине ${total} вопросов. ${single} вопросов с одним верным ответом, ${multi} вопросов с несколькими верными ответами. Сделай современный дизайн и понятный интерфейс.`;
+            return prompt;
+        }
+
+        async function copyPromptToClipboard(promptText) {
+            try {
+                await navigator.clipboard.writeText(promptText);
+                return true;
+            } catch (err) {
+                console.warn('Clipboard error', err);
+                // fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = promptText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                return true;
+            }
+        }
+
+        function openAliceAndCopy(values) {
+            const promptText = buildPrompt(values);
+            // Копируем промт
+            copyPromptToClipboard(promptText).then(() => {
+                // Открываем Яндекс Алису в новой вкладке
+                window.open('https://alice.yandex.ru/', '_blank');
+                showMessage(`✅ Промт скопирован! Вставьте его в Алису (Ctrl+V)`, false);
+            }).catch(() => {
+                showMessage("Не удалось скопировать, но вы можете скопировать вручную", true);
+                window.open('https://alice.yandex.ru/', '_blank');
+            });
+        }
+
+        function handleMainAction() {
+            const values = validateAndGetValues();
+            if (!values) return;
+            openAliceAndCopy(values);
+        }
+
+        function handleCopyOnly() {
+            const values = validateAndGetValues();
+            if (!values) return;
+            const promptText = buildPrompt(values);
+            copyPromptToClipboard(promptText).then(() => {
+                showMessage("📋 Промт скопирован! Теперь откройте Алису и вставьте его.", false);
+            }).catch(() => {
+                showMessage("Ошибка копирования", true);
+            });
+        }
+
+        // добавим автоматическую проверку суммы при изменении полей (уведомление, но не блокируем)
+        function checkSumConsistency() {
+            let total = parseInt(totalQInput.value, 10);
+            let single = parseInt(singleAnsInput.value, 10);
+            let multi = parseInt(multiAnsInput.value, 10);
+            if (!isNaN(total) && !isNaN(single) && !isNaN(multi)) {
+                if (single + multi !== total && total > 0) {
+                    singleAnsInput.style.borderColor = "#f97316";
+                    multiAnsInput.style.borderColor = "#f97316";
+                    totalQInput.style.borderColor = "#f97316";
+                } else {
+                    singleAnsInput.style.borderColor = "#e2e8f0";
+                    multiAnsInput.style.borderColor = "#e2e8f0";
+                    totalQInput.style.borderColor = "#e2e8f0";
+                }
+            }
+        }
+
+        totalQInput.addEventListener('input', checkSumConsistency);
+        singleAnsInput.addEventListener('input', checkSumConsistency);
+        multiAnsInput.addEventListener('input', checkSumConsistency);
+        
+        createBtn.addEventListener('click', handleMainAction);
+        copyOnlyBtn.addEventListener('click', handleCopyOnly);
+
+        // предустановка примера, чтобы сумма сходилась
+        function setExample() {
+            themeInput.value = "Основы программирования (Python)";
+            courseInput.value = 2;
+            totalQInput.value = 6;
+            singleAnsInput.value = 4;
+            multiAnsInput.value = 2;
+            checkSumConsistency();
+        }
+        // если поля пустые, подставим дефолт согласованный
+        if (parseInt(totalQInput.value) !== parseInt(singleAnsInput.value) + parseInt(multiAnsInput.value)) {
+            setExample();
+        } else {
+            checkSumConsistency();
+        }
+    })();
+</script>
+</body>
+</html>
